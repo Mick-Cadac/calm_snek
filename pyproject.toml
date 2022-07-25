@@ -1,13 +1,18 @@
 [tool.poetry]
-name = "repl_python3_calmsnek"
+name = "calm_snek"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
+packages = [
+    { include = "main.py" },
+    { include = "move_process.py" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 Flask = "^2.0.1"
 Flask-Cors = "^3.0.10"
+gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]
 
