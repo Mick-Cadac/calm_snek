@@ -126,8 +126,9 @@ def move_it(data: dict) ->str:
   print(f"MOVE: {move}")
   return move
 
-def check_for_enemies(my_snake_id: str, other_snakes: list, my_head_key: str, my_head: dict, possible_moves: List[str], remove_direction: str, dir_val: int):
+def check_for_enemies(my_snake_id: str, other_snakes: list, my_head_key: str, my_snake: dict, possible_moves: List[str], remove_direction: str, dir_val: int):
   move_removed = False
+  my_head = my_snake["head"]
 
   head_other_key = "x" if my_head_key == "y" else "y"
   next_head_val = my_head[my_head_key] + dir_val
@@ -139,6 +140,11 @@ def check_for_enemies(my_snake_id: str, other_snakes: list, my_head_key: str, my
     counter = 0
     for part in snake["body"]:
       if my_head[head_other_key] == part[head_other_key] and (next_head_val == part[my_head_key] or (next_head_val + dir_val) == part[my_head_key]):
+        # Check if this part is the enemy head
+        # if (part == snake["head"]) and (my_snake["length"] > snake["length"]):
+            #attack
+          # return
+
         possible_moves.remove(remove_direction)
         move_removed = True
         break
@@ -174,6 +180,7 @@ def check_for_own_body(my_body: list, my_head_key: str, my_head: dict, possible_
 def build_snake_moves(data: dict, possible_moves: List[str]):
   print(f"build_snake_moves - Possible moves: {possible_moves}")
   my_snake_id = data["you"]["id"]
+  my_snake = data["you"]
   width = data["board"]["width"]
   height = data["board"]["height"]
   food = data["board"]["food"]
@@ -186,7 +193,7 @@ def build_snake_moves(data: dict, possible_moves: List[str]):
     sorted(sorted_food_locations, key=itemgetter('y'))
 
   # for each possible move direction detect food, enemy or self
-  for direction in possible_moves:
+  for direction in list(possible_moves):
     counter = 0
     move_removed = False
     print(f"Possible moves for direction:{direction} {possible_moves}")
@@ -201,7 +208,7 @@ def build_snake_moves(data: dict, possible_moves: List[str]):
         continue
 
       # Any enemies in this direction
-      check_for_enemies(my_snake_id, other_snakes,"y", head, possible_moves, "down", -1)
+      check_for_enemies(my_snake_id, other_snakes,"y", my_snake, possible_moves, "down", -1)
       
     if direction == "up":
       #up is a y direction
@@ -213,7 +220,7 @@ def build_snake_moves(data: dict, possible_moves: List[str]):
         continue
 
       # Any enemies in this direction
-      check_for_enemies(my_snake_id, other_snakes,"y", head, possible_moves, "up", 1)
+      check_for_enemies(my_snake_id, other_snakes,"y", my_snake, possible_moves, "up", 1)
    
     if direction == "left":
       #left is an x direction
@@ -225,7 +232,7 @@ def build_snake_moves(data: dict, possible_moves: List[str]):
         continue
 
       # Any enemies in this direction
-      check_for_enemies(my_snake_id, other_snakes,"x", head, possible_moves, "left", -1)
+      check_for_enemies(my_snake_id, other_snakes,"x", my_snake, possible_moves, "left", -1)
 
     if direction == "right":
       #right is an x direction
@@ -236,8 +243,4 @@ def build_snake_moves(data: dict, possible_moves: List[str]):
         continue
 
       # Any enemies in this direction      
-      check_for_enemies(my_snake_id, other_snakes,"x", head, possible_moves, "right", 1)
-
-
-
-  
+      check_for_enemies(my_snake_id, other_snakes,"x", my_snake, possible_moves, "right", 1)
