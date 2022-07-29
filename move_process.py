@@ -126,9 +126,72 @@ def move_it(data: dict) ->str:
   print(f"MOVE: {move}")
   return move
 
+def is_risky_move(board: dict, my_head: dict, my_snake_id: str):
+  x_walls_start = 0
+  x_walls_end = board["width"] - 1
+  y_walls_start = 0
+  y_walls_end = board["height"] - 1
+  print("In risky moves function")
+  print(f"My head: {my_head}")
+  print(f"Wall: x start:{x_walls_start}, x end:{x_walls_end}, y start: {y_walls_start}, y end: {y_walls_end}")
+
+  for enemy in board["snakes"]:
+    if my_snake_id == enemy["id"]:
+      continue
+
+    # Is my head next to a wall
+    if my_head["x"] == x_walls_start:
+      #Left edge of board, can only move up or down
+      #Check up and down for enemies causing trap
+      # enemy y values 1 down and 1 across from my_head
+      enemy_body_part_down = {"x":my_head['x'] + 1, "y":my_head["y"] - 1}
+      for part in enemy["body"]:
+        if part == enemy_body_part_down:
+          #go the other direction
+          return "up"
+        else:
+          return "down"
+
+    if my_head["y"] == y_walls_start:
+      # Bottom edge of board
+      enemy_body_part_left = {"x":my_head['x'] - 1, "y":my_head["y"] + 1}
+
+      for part in enemy["body"]:
+        if part == enemy_body_part_left:
+          #go the other direction
+          return "right"
+        else:
+          return "left"
+   
+    if my_head["y"] == y_walls_end:
+      #Top edge of board, can only go left or right
+      #Check left and right for enemies causing trap
+      # enemy y values 1 down and 1 across from my_head
+      enemy_body_part_left = {"x":my_head['x'] - 1, "y":my_head["y"] - 1}
+
+      for part in enemy["body"]:
+        if part == enemy_body_part_left:
+          #go the other direction
+          return "right"
+        else:
+          return "left"
+            
+    if my_head["x"] == x_walls_end:
+      # Right edge of board
+      enemy_body_part_down = {"x":my_head['x'] - 1, "y":my_head["y"] - 1}
+
+      for part in enemy["body"]:
+        if part == enemy_body_part_down:
+          #go the other direction
+          return "up"
+        else:
+          return "down"
+  return None
+
 def check_for_enemies(my_snake_id: str, other_snakes: list, my_head_key: str, my_snake: dict, possible_moves: List[str], remove_direction: str, dir_val: int):
   move_removed = False
   my_head = my_snake["head"]
+
 
   head_other_key = "x" if my_head_key == "y" else "y"
   next_head_val = my_head[my_head_key] + dir_val
@@ -181,8 +244,6 @@ def build_snake_moves(data: dict, possible_moves: List[str]):
   print(f"build_snake_moves - Possible moves: {possible_moves}")
   my_snake_id = data["you"]["id"]
   my_snake = data["you"]
-  width = data["board"]["width"]
-  height = data["board"]["height"]
   food = data["board"]["food"]
   head = data["you"]["head"]
   my_body = data["you"]["body"]
@@ -244,3 +305,9 @@ def build_snake_moves(data: dict, possible_moves: List[str]):
 
       # Any enemies in this direction      
       check_for_enemies(my_snake_id, other_snakes,"x", my_snake, possible_moves, "right", 1)
+
+  risky_direction = is_risky_move(data["board"], head, my_snake_id)
+  print(f"Risky direction: {risky_direction}")
+  if risky_direction and risky_direction in possible_moves:
+    possible_moves.remove(risky_direction)
+                   
