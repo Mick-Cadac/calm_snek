@@ -205,23 +205,6 @@ def check_for_enemies(my_snake_id: str, other_snakes: list, my_head_key: str, my
   for snake in other_snakes:
     if my_snake_id == snake["id"]:
       continue
-
-    # Check enemy head loaction and body length, avoid if not strong enough
-    if my_snake["length"] <= snake["length"]:
-      enemy_head = snake["head"]
-    
-    if next_head_val == enemy_head[my_head_key] and my_head[head_other_key] - 1 == enemy_head[head_other_key]:
-      possible_moves.remove(remove_direction)
-      break
-
-    if next_head_val == enemy_head[my_head_key] and my_head[head_other_key] + 1 == enemy_head[head_other_key]:
-      possible_moves.remove(remove_direction)
-      break
-    
-    if next_head_val == enemy_head[my_head_key] and my_head[head_other_key] + 1 == enemy_head[head_other_key]:
-      possible_moves.remove(remove_direction)
-      break          
-        
   
     counter = 0
     for part in snake["body"]:
@@ -235,6 +218,23 @@ def check_for_enemies(my_snake_id: str, other_snakes: list, my_head_key: str, my
         move_removed = True
         break
       counter += 1
+
+    # Check enemy head loaction and body length, avoid if not strong enough
+    if my_snake["length"] <= snake["length"]:
+      enemy_head = snake["head"]
+    
+      if next_head_val == enemy_head[my_head_key] and my_head[head_other_key] - 1 == enemy_head[head_other_key]:
+        possible_moves.remove(remove_direction)
+        break
+  
+      if next_head_val == enemy_head[my_head_key] and my_head[head_other_key] + 1 == enemy_head[head_other_key]:
+        possible_moves.remove(remove_direction)
+        break
+      
+      if next_head_val == enemy_head[my_head_key] and my_head[head_other_key] + 1 == enemy_head[head_other_key]:
+        possible_moves.remove(remove_direction)
+        break 
+      
     if move_removed:
       break
 
