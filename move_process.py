@@ -118,15 +118,15 @@ def move_it(data: dict) ->str:
   if len(possible_moves) == 1:
     return possible_moves[0]
 
- 
-  food_directions = food_moves(data["board"]["food"], my_head, possible_moves)
-  print(f"food_directions: {food_directions}")
+  if len(possible_moves) > 1:
+    food_directions = food_moves(data["board"]["food"], my_head, possible_moves)
+    print(f"food_directions: {food_directions}")
 
-  if food_directions:
-    for direction in food_directions:
-      if direction in possible_moves:
-        print(f"MOVE for food: {direction}")
-        return direction
+    if food_directions:
+      for direction in food_directions:
+        if direction in possible_moves:
+          print(f"MOVE for food: {direction}")
+          return direction
 
   move = random.choice(possible_moves)
   print(f"MOVE: {move}")
@@ -329,8 +329,9 @@ def build_snake_moves(data: dict, possible_moves: List[str]):
       # Any enemies in this direction      
       check_for_enemies(my_snake_id, other_snakes,"x", my_snake, possible_moves, "right", 1)
 
-  risky_direction = is_risky_move(data["board"], head, my_snake_id)
-  print(f"Risky direction: {risky_direction}")
-  if risky_direction and risky_direction in possible_moves:
-    possible_moves.remove(risky_direction)
+  if len(possible_moves) > 1:
+    risky_direction = is_risky_move(data["board"], head, my_snake_id)
+    print(f"Risky direction: {risky_direction}")
+    if risky_direction and risky_direction in possible_moves:
+      possible_moves.remove(risky_direction)
                    
