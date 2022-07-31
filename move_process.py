@@ -105,9 +105,19 @@ def move_it(data: dict) ->str:
   # Don't allow your Battlesnake to move back in on it's own neck
   possible_moves = avoid_my_neck(my_head, my_body, possible_moves)
   print(f"Possible moves after neck: {possible_moves}")
- 
+
+  possible_moves = avoid_walls(board["width"], my_head, possible_moves)
+  print(f"Possible moves after wall: {possible_moves}")
+
+  if len(possible_moves) == 1:
+    return possible_moves[0]
+  
   build_snake_moves(data, possible_moves)
   print(f"Possible moves after snake moves: {possible_moves}")
+
+  if len(possible_moves) == 1:
+    return possible_moves[0]
+
  
   food_directions = food_moves(data["board"]["food"], my_head, possible_moves)
   print(f"food_directions: {food_directions}")
@@ -117,10 +127,6 @@ def move_it(data: dict) ->str:
       if direction in possible_moves:
         print(f"MOVE for food: {direction}")
         return direction
-
-  possible_moves = avoid_walls(board["width"], my_head, possible_moves)
-  print(f"Possible moves after wall: {possible_moves}")
-
 
   move = random.choice(possible_moves)
   print(f"MOVE: {move}")
@@ -199,12 +205,29 @@ def check_for_enemies(my_snake_id: str, other_snakes: list, my_head_key: str, my
   for snake in other_snakes:
     if my_snake_id == snake["id"]:
       continue
+
+    # Check enemy head loaction and body length, avoid if not strong enough
+    if my_snake["length"] <= snake["length"]:
+      enemy_head = snake["head"]
+    
+    if next_head_val == enemy_head[my_head_key] and my_head[head_other_key] - 1 == enemy_head[head_other_key]:
+      possible_moves.remove(remove_direction)
+      break
+
+    if next_head_val == enemy_head[my_head_key] and my_head[head_other_key] + 1 == enemy_head[head_other_key]:
+      possible_moves.remove(remove_direction)
+      break
+    
+    if next_head_val == enemy_head[my_head_key] and my_head[head_other_key] + 1 == enemy_head[head_other_key]:
+      possible_moves.remove(remove_direction)
+      break          
+        
   
     counter = 0
     for part in snake["body"]:
       if my_head[head_other_key] == part[head_other_key] and (next_head_val == part[my_head_key] or (next_head_val + dir_val) == part[my_head_key]):
         # Check if this part is the enemy head
-        # if (part == snake["head"]) and (my_snake["length"] > snake["length"]):
+        # if (part == snake["head"]) and (my_snake["length"] <= snake["length"]):
             #attack
           # return
 
